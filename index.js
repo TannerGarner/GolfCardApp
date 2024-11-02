@@ -212,7 +212,7 @@ addPlayerButton.addEventListener('click', function (){
 })
 
 function addPlayer (table){
-  //get input
+  //get input name
   let playerName = addPlayerInput.value;
 
   //add player name to table on new row
@@ -234,9 +234,33 @@ function addPlayer (table){
     playerTr.appendChild(playerTd);
   }
 
-  const playerInputs = playerTr.querySelectorAll('.playerPar');
-  playerInputs.forEach(par => {
-    
+  //add Total for player inputs
+  const playerInputRows = table.querySelectorAll('.playerRow');
+  let playerInputs;
+  let totalOfInputs;
+  playerInputRows.forEach(row => {
+    const totalDisplay = document.createElement('td');
+    totalDisplay.className = 'playerTotal';
+
+    playerInputs = row.querySelectorAll('.playerPar');
+
+    playerInputs.forEach(par => {
+      par.addEventListener('change', function () {
+        //Reset total to 0
+        let totalOfInputs = 0;
+        
+        playerInputs.forEach(input => {
+          totalOfInputs += Number(input.value) || 0;
+
+        });
+
+        //Display Total
+        totalDisplay.textContent = totalOfInputs;
+        playerTr.appendChild(totalDisplay);
+      })
+    });
+    totalDisplay.textContent = totalOfInputs;
+    playerTr.appendChild(totalDisplay);
   });
 }
 
