@@ -4,6 +4,9 @@ const tableContainerDivs = document.querySelectorAll(".tableContainer");
 const frontNineTable = document.getElementById("frontNine");
 const backNineTable = document.getElementById("backNine");
 let courseData = [];
+const addPlayerInput = document.getElementById('addPlayerInput');
+const addPlayerButton = document.getElementById('addPlayerButton');
+const resetCardButton = document.getElementById('resetCard');
 
 const getAvailableCourses = async (url) => {
   try {
@@ -128,17 +131,16 @@ async function constructTeeSelect(url) {
     const eighteenHoleData = Array.from(courseDetail.holes).slice(9);
     console.log(eighteenHoleData, teeBoxSelection);
 
-    // constructCourseTable(nineHoleData, teeBoxSelection);
-    // constructCourseTable(eighteenHoleData, teeBoxSelection);
-
+    constructCourseTable(nineHoleData, teeBoxSelection, frontNineTable);
+    constructCourseTable(eighteenHoleData, teeBoxSelection, backNineTable);
   }
 }
 
 async function constructCourseTable(holeData, teeBoxSelection, table) {
-  //deconstruct table
+  // Deconstruct table
   table.innerHTML = "";
 
-  //construct table header
+  // Construct table header row
   const thead = document.createElement("thead");
   const tr1 = document.createElement("tr");
   thead.appendChild(tr1);
@@ -146,27 +148,106 @@ async function constructCourseTable(holeData, teeBoxSelection, table) {
   thTitle.textContent = "Hole";
   tr1.appendChild(thTitle);
 
-  let dataByBox;
+  // Initialize dataByBox to store arrays of values for each category
+  const dataByBox = { par: [], yards: [], handicap: [] };
+  let dataTitles = Object.keys(dataByBox);
 
+  // Construct table body
+  const tbody = document.createElement("tbody");
+
+  // Populate dataByBox with each hole's values and add table header values
   holeData.forEach((hole) => {
-    //create most of top line
     const th = document.createElement("th");
     th.textContent = hole.hole;
     tr1.appendChild(th);
 
-    dataByBox = hole?.teeBoxes.find((t) => {
-      return t.teeType === teeBoxSelection;
-    });
+    // Find the selected tee box within the hole
+    const teeBox = hole.teeBoxes.find((t) => t.teeType === teeBoxSelection);
+
+    if (teeBox) {
+      dataByBox.par.push(teeBox.par);
+      dataByBox.yards.push(teeBox.yards);
+      dataByBox.handicap.push(teeBox.hcp);
+    }
   });
-  console.log(dataByBox);
 
-  //get
-
-  //construct table body
-  const tbody = document.createElement("tbody");
-  //construct each row
-
+  //add final Total Column header
+  const totalCol = document.createElement('th');
+  totalCol.textContent = 'Total';
+  tr1.appendChild(totalCol);
   table.appendChild(thead);
+
+  // Construct Row Headings and Row Data with Totals
+  dataTitles.forEach((category) => {
+    //Row
+    const tr = document.createElement("tr");
+    //Row Headings
+    const td1 = document.createElement("td");
+    td1.textContent = capitalizeFirstLetter(category);
+    tr.appendChild(td1);
+    //Add each cell in the row and find the sum of all cells
+    const rowTotal = dataByBox[category].reduce((acc, value) => {
+      const td = document.createElement("td");
+      td.className = `${category}`
+      td.textContent = value;
+      tr.appendChild(td);
+      return acc + value;
+    }, 0);
+
+    //Add total cell at the end of the row
+    const tdTotal = document.createElement('td');
+    tdTotal.textContent = rowTotal;
+    tr.appendChild(tdTotal);
+    tbody.appendChild(tr);
+  });
+
+  //Append constructed body to the table
+  table.appendChild(tbody);
 }
 
-async function constructFrontNine(data, teeBox) {}
+addPlayerButton.addEventListener('click', function (){
+  addPlayer(frontNineTable);
+  addPlayer(backNineTable);
+  addPlayerInput.value = '';
+})
+
+function addPlayer (table){
+  //get input
+  let playerName = addPlayerInput.value;
+
+  //add player name to table on new row
+  const playerTr = document.createElement('tr');
+  playerTr.className = "playerRow";
+  table.appendChild(playerTr);
+
+  const nameTd = document.createElement('td');
+  nameTd.textContent = playerName;
+  playerTr.appendChild(nameTd);
+
+  //add number inputs on the remainder of the row
+  for(i=0;i<9;i++){
+    const newInput = document.createElement('input');
+    newInput.type = 'number';
+    newInput.className = 'playerPar';
+    const playerTd = document.createElement('td');
+    playerTd.appendChild(newInput);
+    playerTr.appendChild(playerTd);
+  }
+
+  const playerInputs = playerTr.querySelectorAll('.playerPar');
+  playerInputs.forEach(par => {
+    
+  });
+}
+
+resetCardButton.addEventListener('click', function(){
+  //delete all player rows
+  const playerRows = document.querySelectorAll(".playerRow");
+  playerRows.forEach(playerRow => {
+    playerRow.remove();
+  });
+})
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}

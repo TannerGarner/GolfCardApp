@@ -1,8 +1,67 @@
+html, body {
+    background-color: rgb(172, 242, 196);
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Quicksand", serif;
+}
+
+#main > *{
+    padding: 10px;
+}
+
+h1{
+    font-weight: none;
+    font-style: normal;
+}
+
+#selection > *{
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#selection > select {
+    border: 1px solid rgb(200, 200, 200);
+}
+
 table {
     border-collapse: collapse;
 }
 
+table:nth-child(1):first-child {
+    border-top-left-radius: 10px;
+}
+
+
+
 th, td {
     margin: 0;
-    border: 1px solid black;
+    padding: 10px;
+    border: 1px solid rgb(200, 200, 200);
+    text-align: center;
+}
+
+th {
+    background-color: whitesmoke;
+}
+
+tr{
+    background-color: whitesmoke;
+}
+
+.playerPar{
+    width: 30px;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    padding: 3px 3px 3px 15px;
+}
+
+.playerUi > *{
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgb(200, 200, 200);
 }
